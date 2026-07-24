@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "claude-plugins",
+  "name": "sharpps-plugins",
   "description": "Plugin marketplace for SharpPS framework tooling and knowledge",
   "owner": {
     "name": "gweone",

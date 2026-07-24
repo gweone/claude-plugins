@@ -12,7 +12,7 @@ Add this marketplace, then install a plugin from it:
 
 ```
 /plugin marketplace add gweone/claude-plugins
-/plugin install sharpps-sitecore@claude-plugins
+/plugin install sharpps-sitecore@sharpps-plugins
 ```
 
 or browse for the plugin in `/plugin > Discover`.
