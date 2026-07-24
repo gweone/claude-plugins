@@ -16,7 +16,7 @@ description: >
   npm/React wired into the module in the first place, not the tag-mounting API.
 ---
 
-# Setting up a React module in this Liferay workspace
+# Liferay React Module Skill
 
 ## Workflow
 
@@ -34,9 +34,16 @@ straight to running `blade create` or `blade gw deploy`:
 
 ## 0. First: does this even need a traditional module?
 
-Per this workspace's `CLAUDE.md`: the workspace product is a Quarterly Release
-(`liferay.workspace.product=dxp-2026.q2.1` in the root `gradle.properties`), so the default bias
-is Client Extensions (Custom Element in particular) over traditional OSGi modules.
+Check the current workspace's version first — don't assume it. Read `liferay.workspace.product`
+(and/or `target.platform.version`) from the root `gradle.properties`:
+
+- **Version < 7.4**: no Client Extension bias applies — a traditional OSGi module is the normal
+  default, so skip straight to Section 1.
+- **Version ≥ 7.4, or a Quarterly Release (a `liferay.workspace.product` value containing
+  `.qN.` / a `dxp-YYYY.qN.x` pattern)**: this workspace's own `CLAUDE.md`-style rules (if present)
+  typically bias toward Client Extensions (Custom Element in particular) over traditional OSGi
+  modules — check for such a rule before scaffolding, and only fall back to a traditional module
+  for the reasons below.
 
 **A traditional module is still the right call when:**
 - React needs to be mounted from inside a **JSP or FTL custom tag** (a Display Template, an
@@ -54,7 +61,7 @@ widget vs. a specific tag's output inside an existing JSP/FTL) before picking a 
 
 ---
 
-## 1. Two concrete patterns exist in/around this workspace — pick based on where React mounts
+## 1. Two concrete patterns — pick based on where React mounts
 
 | | **A. Whole portlet is React** | **B. React mounted from inside a tag** |
 |---|---|---|
@@ -72,15 +79,22 @@ Don't mix these up — pattern B's `ReactRenderer`/`Snapshot`/`ComponentDescript
 
 ## 2. Pattern A: whole portlet is React (blade scaffold)
 
-Scaffold it with blade rather than hand-copying files — confirmed working in this workspace.
-State the resolved package name and module name (the Plan) before running:
+Scaffold it with blade rather than hand-copying files, run from the target workspace's root (not
+via `-d` pointed elsewhere). State the resolved package name and module name (the Plan) before
+running:
 
 ```bash
-blade create -t npm-react-portlet -p com.example.yourpackage -v 7.4 your-module-name
+blade create -t npm-react-portlet -p com.example.yourpackage your-module-name
 ```
 
-(`-v 7.4` is required — `blade create` errors with "Cannot determine Liferay Version" without
-an explicit version or Liferay-version-bearing directory context.)
+Don't pass `-v`/`--liferay-product` — verified live that `blade create`, run from inside a real
+workspace root, auto-detects the product/version from that workspace itself and generates the
+correct dependency accordingly (a DXP workspace yielded
+`compileOnly group: "com.liferay.portal", name: "release.dxp.api"` in the generated
+`build.gradle`, with no flag needed). Only fall back to an explicit `-v <version>` /
+`--liferay-product <portal|dxp>` if blade errors with "Cannot determine Liferay Version" — that
+happens when it can't see a real workspace context (e.g. `-d` pointed outside one), not under
+normal use.
 
 This generates, verified by actually running it:
 
@@ -197,8 +211,8 @@ a working build.
 
 ## 4. Building and deploying either pattern
 
-Same as any other module in this workspace — steer toward blade, not raw `gradlew`. State the
-exact module path (the Plan) before running:
+Same as any other module in a Liferay workspace — steer toward blade, not raw `gradlew`. State
+the exact module path (the Plan) before running:
 
 ```bash
 blade gw :modules:your-module-name:deploy

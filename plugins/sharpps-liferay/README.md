@@ -21,17 +21,13 @@ Liferay knowledge and workflow tooling for solutions built on the [SharpPS](http
 
 ## Action skill workflow: Spec → Plan → Execution
 
-The action skills (`build`, `deploy`, `clean-logs`, `liferay-logs`, `liferay-react-module`) all
-follow the same three-phase workflow, and never skip straight to running a command:
-
-1. **Spec** — resolve the concrete target (which module, which container, live vs. snapshot,
-   etc.) before doing anything, asking the user if it's ambiguous.
-2. **Plan** — state the exact command(s) that are about to run, naming the resolved target, so
-   the user can see it clearly before anything executes.
-3. **Execution** — run the command(s) from the Plan and report the result.
-
-This keeps deploys/log-clears/builds predictable: what will happen is always spelled out before
-it happens, not discovered after the fact in the tool output.
+Skills in this plugin that run real commands (not just reference knowledge) follow a standard
+three-phase convention — never skip straight to running a command: **Spec** (resolve the
+concrete target, asking the user if ambiguous), **Plan** (state the exact command(s) about to
+run before running them), **Execution** (run them and report the result). This keeps
+deploys/log-clears/builds predictable: what will happen is always spelled out before it happens,
+not discovered after the fact in the tool output. See each skill's own `SKILL.md` for how it
+applies this to that skill's specific commands.
 
 ## Source
 

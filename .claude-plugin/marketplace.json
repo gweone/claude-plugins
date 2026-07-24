@@ -26,6 +26,16 @@
       "category": "development",
       "source": "./plugins/sharpps-liferay",
       "homepage": "https://github.com/gweone/claude-plugins/tree/main/plugins/sharpps-liferay"
+    },
+    {
+      "name": "sharpps-dotnet",
+      "description": ".NET tooling knowledge for solutions built on the SharpPS framework: decompiling .NET Framework and .NET Core/5+ DLLs/EXEs back to C# source via the cross-platform ilspycmd CLI.",
+      "author": {
+        "name": "SharpPS"
+      },
+      "category": "development",
+      "source": "./plugins/sharpps-dotnet",
+      "homepage": "https://github.com/gweone/claude-plugins/tree/main/plugins/sharpps-dotnet"
     }
   ]
 }
