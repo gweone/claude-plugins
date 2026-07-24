@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-plugins",
+  "description": "Plugin marketplace for SharpPS framework tooling and knowledge",
+  "owner": {
+    "name": "gweone",
+    "email": "julkahendrist@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "sharpps-sitecore",
+      "description": "Sitecore/SXA knowledge for solutions built on the SharpPS framework: instance interaction via SharpPS.Shells (PowerShell/SPE), SXA native search (/sxa/search/*), creating Feature/Foundation projects, and building Controller Renderings with a custom .cshtml view path.",
+      "author": {
+        "name": "SharpPS"
+      },
+      "category": "development",
+      "source": "./plugins/sharpps-sitecore",
+      "homepage": "https://github.com/gweone/claude-plugins/tree/main/plugins/sharpps-sitecore"
+    }
+  ]
+}
