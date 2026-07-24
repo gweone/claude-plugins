@@ -1,6 +1,6 @@
 {
   "name": "sharpps-dotnet",
-  "description": ".NET tooling knowledge for solutions built on the SharpPS framework: decompiling .NET Framework and .NET Core/5+ DLLs/EXEs back to C# source via the cross-platform ilspycmd CLI.",
+  "description": ".NET tooling knowledge for solutions built on the SharpPS framework: decompiling .NET Framework and .NET Core/5+ DLLs/EXEs back to C# source via the cross-platform ilspycmd CLI, and the SharpPS.Shells PowerShell module's pipeline system (registering, running, and runtime-patching named pipelines).",
   "author": {
     "name": "SharpPS"
   }
