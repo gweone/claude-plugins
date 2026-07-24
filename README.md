@@ -13,6 +13,7 @@ Add this marketplace, then install a plugin from it:
 ```
 /plugin marketplace add gweone/claude-plugins
 /plugin install sharpps-sitecore@sharpps-plugins
+/plugin install sharpps-liferay@sharpps-plugins
 ```
 
 or browse for the plugin in `/plugin > Discover`.
@@ -22,6 +23,7 @@ or browse for the plugin in `/plugin > Discover`.
 | Plugin | Description |
 |---|---|
 | [`sharpps-sitecore`](plugins/sharpps-sitecore) | Sitecore/SXA knowledge for solutions built on the SharpPS framework |
+| [`sharpps-liferay`](plugins/sharpps-liferay) | Liferay knowledge and workflow tooling for solutions built on the SharpPS framework |
 
 ## Plugin structure
 

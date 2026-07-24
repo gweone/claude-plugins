@@ -16,6 +16,16 @@
       "category": "development",
       "source": "./plugins/sharpps-sitecore",
       "homepage": "https://github.com/gweone/claude-plugins/tree/main/plugins/sharpps-sitecore"
+    },
+    {
+      "name": "sharpps-liferay",
+      "description": "Liferay knowledge and workflow tooling for solutions built on the SharpPS framework: Gradle build/deploy, Docker log management, Batch Client Extensions, DDM field validation, Site Initializers, JSP/FTL taglibs, management toolbar bulk actions, portlet widget configuration, and navigating the Liferay Portal source.",
+      "author": {
+        "name": "SharpPS"
+      },
+      "category": "development",
+      "source": "./plugins/sharpps-liferay",
+      "homepage": "https://github.com/gweone/claude-plugins/tree/main/plugins/sharpps-liferay"
     }
   ]
 }
