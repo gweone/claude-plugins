@@ -19,7 +19,7 @@
     },
     {
       "name": "sharpps-liferay",
-      "description": "Liferay knowledge and workflow tooling for solutions built on the SharpPS framework: Gradle build/deploy, Docker log management, Batch Client Extensions, DDM field validation, Site Initializers, JSP/FTL taglibs, management toolbar bulk actions, portlet widget configuration, and navigating the Liferay Portal source.",
+      "description": "Liferay knowledge and workflow tooling for solutions built on the SharpPS framework: Gradle build/deploy, Docker log management, Batch Client Extensions, DDM field validation, Site Initializers, JSP/FTL taglibs, React module scaffolding, management toolbar bulk actions, portlet widget configuration, and navigating the Liferay Portal source.",
       "author": {
         "name": "SharpPS"
       },

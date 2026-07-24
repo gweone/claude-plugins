@@ -14,6 +14,9 @@ description: >
 
 # Liferay DDM Field Validation Skill
 
+> Source citations below reference `$LIFERAY_PORTAL`, the dynamically-resolved Liferay Portal
+> source checkout — see the `liferay-portal-source` skill to resolve/bootstrap it.
+
 ## 1. Two distinct mechanisms — know which one you need
 
 | | Declarative expression validation | Custom `DDMValidation` type |
@@ -33,11 +36,11 @@ Confirmed end-to-end from source, not from docs:
 
 - `customProperties.validation` on a `DataDefinitionField` is converted into a real
   `DDMFormFieldValidation` by
-  [`DataDefinitionDDMFormUtil._getDDMFormFieldValidation`](file:///opt/github/liferay-portal/modules/apps/data-engine/data-engine-rest-api/src/main/java/com/liferay/data/engine/rest/dto/v2_0/util/DataDefinitionDDMFormUtil.java#L166-L198),
+  `DataDefinitionDDMFormUtil._getDDMFormFieldValidation` (`$LIFERAY_PORTAL/modules/apps/data-engine/data-engine-rest-api/src/main/java/com/liferay/data/engine/rest/dto/v2_0/util/DataDefinitionDDMFormUtil.java#L166-L198`),
   dispatched whenever a `customProperties` key's registered settings field type is
-  `"validation"` ([dispatch site, line 292-298](file:///opt/github/liferay-portal/modules/apps/data-engine/data-engine-rest-api/src/main/java/com/liferay/data/engine/rest/dto/v2_0/util/DataDefinitionDDMFormUtil.java#L292-L298)).
+  `"validation"` (`dispatch site, line 292-298` (`$LIFERAY_PORTAL/modules/apps/data-engine/data-engine-rest-api/src/main/java/com/liferay/data/engine/rest/dto/v2_0/util/DataDefinitionDDMFormUtil.java#L292-L298`)).
 - That `DDMFormFieldValidation` is enforced **server-side**, unconditionally, by
-  [`DDMFormValuesValidatorImpl`](file:///opt/github/liferay-portal/modules/apps/dynamic-data-mapping/dynamic-data-mapping-validator/src/main/java/com/liferay/dynamic/data/mapping/validator/internal/DDMFormValuesValidatorImpl.java)
+  `DDMFormValuesValidatorImpl` (`$LIFERAY_PORTAL/modules/apps/dynamic-data-mapping/dynamic-data-mapping-validator/src/main/java/com/liferay/dynamic/data/mapping/validator/internal/DDMFormValuesValidatorImpl.java`)
   — the one shared validator the whole Data Engine funnels through (Document Types, Objects,
   Forms all use it), not something wired into just one UI screen. It cannot be bypassed by
   calling headless REST or JSONWS directly instead of the UI form.
@@ -71,7 +74,7 @@ backend-enforced (unlike the `dataRules` show/hide mechanism in Section 5).
 directly instead of reinventing them: `isEmailAddress()`, `isURL()`, `matches()` (regex), plus
 comparison/date-range ones (`IsEqualTo`, `IsGreaterThan`, `IsLessThan`, `Contains`,
 `FutureDates`, `PastDates`, etc.). Full list and their exact `getTemplate()` strings:
-[validation package](file:///opt/github/liferay-portal/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-evaluator-impl/src/main/java/com/liferay/dynamic/data/mapping/form/evaluator/internal/validation/).
+`validation package` (`$LIFERAY_PORTAL/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-evaluator-impl/src/main/java/com/liferay/dynamic/data/mapping/form/evaluator/internal/validation/`).
 
 ## 3. Custom validator (`DDMValidation` OSGi component) — new dropdown option, instance-wide
 
@@ -80,7 +83,7 @@ in the field settings' "Validation" dropdown (same UI slot as "Email"/"URL"/"Mat
 of hand-writing a raw expression once on one field.
 
 Interface:
-[`DDMValidation`](file:///opt/github/liferay-portal/modules/apps/dynamic-data-mapping/dynamic-data-mapping-api/src/main/java/com/liferay/dynamic/data/mapping/form/validation/DDMValidation.java)
+`DDMValidation` (`$LIFERAY_PORTAL/modules/apps/dynamic-data-mapping/dynamic-data-mapping-api/src/main/java/com/liferay/dynamic/data/mapping/form/validation/DDMValidation.java`)
 
 ```java
 @Component(
@@ -113,18 +116,18 @@ public class IsEmailDDMValidation implements DDMValidation {
 ```
 
 Real OOTB example this was copied from:
-[`IsEmailDDMValidation.java`](file:///opt/github/liferay-portal/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-evaluator-impl/src/main/java/com/liferay/dynamic/data/mapping/form/evaluator/internal/validation/IsEmailDDMValidation.java).
+`IsEmailDDMValidation.java` (`$LIFERAY_PORTAL/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-evaluator-impl/src/main/java/com/liferay/dynamic/data/mapping/form/evaluator/internal/validation/IsEmailDDMValidation.java`).
 Other OOTB implementations live in the same package — copy whichever is closest to the new rule
 (e.g. `MatchesDDMValidation` for a parameterized regex) rather than starting from scratch.
 
 ### How it binds to a field — confirmed by tracing the consumer, not assumed
 
-[`DDMFormTemplateContextFactoryImpl`](file:///opt/github/liferay-portal/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-renderer/src/main/java/com/liferay/dynamic/data/mapping/form/renderer/internal/DDMFormTemplateContextFactoryImpl.java#L152-L156)
+`DDMFormTemplateContextFactoryImpl` (`$LIFERAY_PORTAL/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-renderer/src/main/java/com/liferay/dynamic/data/mapping/form/renderer/internal/DDMFormTemplateContextFactoryImpl.java#L152-L156`)
 builds a `ServiceTrackerMap<String, List<DDMValidation>>` keyed by the `ddm.validation.data.type`
 component property (grouped by **data type** — `string`/`integer`/`double`/`date`/etc — **not**
 by DDM Form Field Type like `text`/`select`), ordered by `ddm.validation.ranking`, and puts the
 result into the template context
-([line 354](file:///opt/github/liferay-portal/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-renderer/src/main/java/com/liferay/dynamic/data/mapping/form/renderer/internal/DDMFormTemplateContextFactoryImpl.java#L354))
+(`line 354` (`$LIFERAY_PORTAL/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-renderer/src/main/java/com/liferay/dynamic/data/mapping/form/renderer/internal/DDMFormTemplateContextFactoryImpl.java#L354`))
 that renders the field settings' Validation dropdown. `getTemplate()`'s `{name}` placeholder is
 substituted with the actual field name at runtime — the resulting string is exactly what ends up
 as `customProperties.validation.expression.value` from Section 2, so it goes through the same
@@ -143,7 +146,7 @@ call to an external system), pair this with a custom `DDMExpressionFunction` OSG
 ## 4. Not achievable via Client Extension — confirmed, not assumed
 
 Checked every registered `@CETType` in
-[`client-extension-type-api`](file:///opt/github/liferay-portal/modules/apps/client-extension/client-extension-type-api/src/main/java/com/liferay/client/extension/type/):
+`client-extension-type-api` (`$LIFERAY_PORTAL/modules/apps/client-extension/client-extension-type-api/src/main/java/com/liferay/client/extension/type/`):
 `fdsCellRenderer`, `fdsFilter`, `customElement`, `iframe`, `themeCSS`, `globalJS`, `globalCSS`,
 `staticContent`, `themeFavicon`, `jsImportMapsEntry`, `themeSpritemap`, `commerceCheckoutStep`,
 `audiencesCustomAttributes`, `editorConfigContributor`. None of them hook into `DDMValidation`,
@@ -191,7 +194,7 @@ opposed to "prevent this value from ever being invalid anywhere."
 ## 5. `dataRules` (show/hide, dependent-field UI rules) — real mechanism, but blocked for Document Types
 
 `DataLayout.dataRules` (`actions`/`conditions`/`logicalOperator` — see
-[`DataRule.java`](file:///opt/github/liferay-portal/modules/apps/data-engine/data-engine-rest-api/src/main/java/com/liferay/data/engine/rest/dto/v2_0/DataRule.java))
+`DataRule.java` (`$LIFERAY_PORTAL/modules/apps/data-engine/data-engine-rest-api/src/main/java/com/liferay/data/engine/rest/dto/v2_0/DataRule.java`))
 is the mechanism for show/hide/enable/disable/require-field rules between fields on the same
 form — Data Engine's own Form Rules feature. Confirmed genuinely useful for "field B required
 only when field A = X" **and** genuinely client-side-only (see the nuance at the end of this
@@ -238,7 +241,7 @@ ways, same as before — **but see the blocker below before reaching for method 
 ### Document Types (and Journal) have no Rules builder UI at all — confirmed from source, not a discoverability issue
 
 `DataLayoutBuilderDefinition.allowRules()` (default `false`,
-[interface](file:///opt/github/liferay-portal/modules/apps/data-engine/data-engine-taglib/) —
+`interface` (`$LIFERAY_PORTAL/modules/apps/data-engine/data-engine-taglib/`) —
 per-`content.type` OSGi component) gates whether the Data Layout Builder's Rules sidebar panel
 gets sent to the browser at all. `document-library-web`'s
 `DocumentLibraryDataLayoutBuilderDefinition` (backing Document Type field editing,

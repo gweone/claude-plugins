@@ -6,19 +6,28 @@ disable-model-invocation: true
 
 Run a full Gradle clean build from the workspace root.
 
-## Steps
+## Workflow
 
-1. Confirm the current directory is the workspace root (where `gradlew` exists).
-   - If not, `cd` to the workspace root first.
+This skill always runs in three phases, in order. Never skip straight to Execution —
+state the Spec and Plan out loud first so the user can see what's about to run.
 
-2. Run the build:
-   ```bash
-   ./gradlew clean build
-   ```
+### 1. Spec
 
-3. Wait for the build to complete.
+Determine the concrete target before doing anything:
+- Whole workspace build, or a specific module (e.g. "build only my-module")?
+- Confirm the current directory is the workspace root (where `gradlew` exists) — `cd` there first if not.
 
-4. Report the result:
+### 2. Plan
+
+State the exact command that will run before running it:
+- Whole workspace: `./gradlew clean build`
+- Single module: `./gradlew --project-dir modules/<module> clean build` (or `:my-module:clean :my-module:build`)
+
+### 3. Execution
+
+1. Run the command from the Plan.
+2. Wait for the build to complete.
+3. Report the result:
    - If **SUCCESS** → tell the user the build passed and list any `.jar` or `.zip` output files found under:
      - `modules/*/build/libs/*.jar`
      - `client-extensions/*/dist/*.zip`
@@ -26,5 +35,4 @@ Run a full Gradle clean build from the workspace root.
 
 ## Notes
 - Do not skip `clean` — always run `clean build` together to avoid stale output.
-- If the user specifies a module (e.g. "build only my-module"), append `--project-dir modules/my-module` or use `:my-module:clean :my-module:build` instead.
 - Do not deploy after building unless the user explicitly asks.

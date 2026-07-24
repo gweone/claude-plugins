@@ -17,6 +17,9 @@ description: >
 
 # Liferay Taglibs Skill (JSP + FTL)
 
+> Commands below reference `$LIFERAY_PORTAL`, the dynamically-resolved Liferay Portal source
+> checkout — see the `liferay-portal-source` skill to resolve/bootstrap it before running them.
+
 Liferay has two separate-but-overlapping tag systems. Knowing which one a file can use, and
 which prefix/namespace maps to which library, avoids guessing tag names or inventing markup
 that doesn't exist.
@@ -63,7 +66,7 @@ Liferay portlet JSPs almost always get these via `init.jsp`/`init-ext.jsp` inclu
 Grep the `.tld` rather than assume the tag/attribute exists or guess its name:
 
 ```bash
-grep -A 15 "<name>fieldset</name>" /opt/github/liferay-portal/util-taglib/src/META-INF/liferay-aui.tld
+grep -A 15 "<name>fieldset</name>" "$LIFERAY_PORTAL/util-taglib/src/META-INF/liferay-aui.tld"
 ```
 
 Check the backing Java class for `@deprecated` — Liferay has quietly deprecated several `aui:`
@@ -251,13 +254,13 @@ Don't guess a tag, macro, or CSS class exists — verify it:
 
 ```bash
 # Does this JSP tag exist, and what attributes does it take?
-grep -A 20 "<name>TAGNAME</name>" /opt/github/liferay-portal/util-taglib/src/META-INF/liferay-*.tld
+grep -A 20 "<name>TAGNAME</name>" "$LIFERAY_PORTAL"/util-taglib/src/META-INF/liferay-*.tld
 
 # Is this tag deprecated? Check its backing class.
-find /opt/github/liferay-portal -iname "*TagNameTag.java" -path "*aui*"
+find "$LIFERAY_PORTAL" -iname "*TagNameTag.java" -path "*aui*"
 
 # Does this Clay FTL macro exist?
-grep -n "<name>" /opt/github/liferay-portal/modules/apps/frontend-taglib/frontend-taglib-clay/src/main/resources/META-INF/liferay-clay.tld
+grep -n "<name>" "$LIFERAY_PORTAL/modules/apps/frontend-taglib/frontend-taglib-clay/src/main/resources/META-INF/liferay-clay.tld"
 
 # Does the THEME actually ship the CSS class you're about to rely on?
 # (Pull the live compiled clay.css and grep it — don't assume a class exists just
@@ -644,7 +647,7 @@ package ending in `.internal.` (Liferay's bnd convention auto-excludes `*.intern
 `Export-Package` override:
 
 ```bash
-find /opt/github/liferay-portal -name "ConcreteClassName.java"
+find "$LIFERAY_PORTAL" -name "ConcreteClassName.java"
 # package com.liferay.foo.web.internal.bar.ConcreteClassName  → not exported, reflection needed
 # package com.liferay.foo.api.bar.ConcreteClassName           → exported, just import + cast
 ```

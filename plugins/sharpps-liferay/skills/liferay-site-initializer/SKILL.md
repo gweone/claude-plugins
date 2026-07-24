@@ -15,6 +15,9 @@ description: >
 
 # Liferay Site Initializer Skill
 
+> Source citations below reference `$LIFERAY_PORTAL`, the dynamically-resolved Liferay Portal
+> source checkout — see the `liferay-portal-source` skill to resolve/bootstrap it.
+
 A Site Initializer provisions a brand-new Site (or re-runs against an existing one) with a fixed
 bundle of content: pages, Web Content, Documents and Media, Knowledge Base articles, Objects,
 Search Experiences (SXP) Blueprints, taxonomies, fragments, roles, and more — all declared as
@@ -353,14 +356,14 @@ Client Extension *can*, fully declaratively, no custom Java required. An earlier
 note wrongly concluded no REST resource exists for this — it does, just under a non-obvious name.**
 `BundleSiteInitializer` itself has no creation path: the only `DLFileEntryType` reference in the
 whole class
-([BundleSiteInitializer.java:789-796](file:///opt/github/liferay-portal/modules/apps/site-initializer/site-initializer-extender/site-initializer-extender/src/main/java/com/liferay/site/initializer/extender/internal/BundleSiteInitializer.java#L789-L796))
+(`BundleSiteInitializer.java:789-796` (`$LIFERAY_PORTAL/modules/apps/site-initializer/site-initializer-extender/site-initializer-extender/src/main/java/com/liferay/site/initializer/extender/internal/BundleSiteInitializer.java#L789-L796`))
 is a token map built from **already-existing** types for `asset-list-entries.json` filters, and
 `ddm-structures/` is hardcoded to `JournalArticle`'s classNameId. But searching for "DocumentType"
 literally misses the real resources — they're named **`DocumentDataDefinitionType`** (the type
 itself) and **`DocumentMetadataSet`** (the reusable field-set a type can attach), both full REST
 resources with `postSite...`/`putSite...ByExternalReferenceCode` methods
-([`DocumentDataDefinitionTypeResource.java`](file:///opt/github/liferay-portal/modules/apps/headless/headless-delivery/headless-delivery-api/src/main/java/com/liferay/headless/delivery/resource/v1_0/DocumentDataDefinitionTypeResource.java),
-[`DocumentMetadataSetResource.java`](file:///opt/github/liferay-portal/modules/apps/headless/headless-delivery/headless-delivery-api/src/main/java/com/liferay/headless/delivery/resource/v1_0/DocumentMetadataSetResource.java)).
+(`DocumentDataDefinitionTypeResource.java` (`$LIFERAY_PORTAL/modules/apps/headless/headless-delivery/headless-delivery-api/src/main/java/com/liferay/headless/delivery/resource/v1_0/DocumentDataDefinitionTypeResource.java`),
+`DocumentMetadataSetResource.java` (`$LIFERAY_PORTAL/modules/apps/headless/headless-delivery/headless-delivery-api/src/main/java/com/liferay/headless/delivery/resource/v1_0/DocumentMetadataSetResource.java`)).
 Internally a Document Type is backed by the Data Engine (App Builder forms) — `DLFileEntryType` now
 has a `dataDefinitionId` column alongside the legacy `DDMStructureLink` row.
 
@@ -411,7 +414,7 @@ content fields must be keyed by `fieldReference`, not `name` — and getting thi
 errors, just silently empty values.** `DocumentResourceImpl` resolves the Document Type by name,
 finds its DDM structure(s) via `DLFileEntryTypeUtil.getDDMStructures`, and converts your
 `contentFields` via `DDMFormValuesUtil.toDDMFormValues`
-([DDMFormValuesUtil.java:156-174](file:///opt/github/liferay-portal/modules/apps/headless/headless-delivery/headless-delivery-api/src/main/java/com/liferay/headless/delivery/dto/v1_0/util/DDMFormValuesUtil.java#L156-L174))
+(`DDMFormValuesUtil.java:156-174` (`$LIFERAY_PORTAL/modules/apps/headless/headless-delivery/headless-delivery-api/src/main/java/com/liferay/headless/delivery/dto/v1_0/util/DDMFormValuesUtil.java#L156-L174`))
 — which groups incoming fields into a map keyed by `contentField.getFieldReference()`, then looks
 each one up by `ddmFormField.getFieldReference()`. If your JSON instead uses `"name":
 "Text96664356"` (the field's internal generated name, which is what GET responses show right next
@@ -423,7 +426,7 @@ to suggest why. Always use `fieldReference` (the human-meaningful key like `"Nam
 
 **A `grid` field's value must use the options' internal `value` keys for both axes, not their
 labels** — confirmed via `GridDDMFormFieldValueValidator`
-([GridDDMFormFieldValueValidator.java](file:///opt/github/liferay-portal/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-field-type/src/main/java/com/liferay/dynamic/data/mapping/form/field/type/internal/grid/GridDDMFormFieldValueValidator.java)),
+(`GridDDMFormFieldValueValidator.java` (`$LIFERAY_PORTAL/modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-field-type/src/main/java/com/liferay/dynamic/data/mapping/form/field/type/internal/grid/GridDDMFormFieldValueValidator.java`)),
 which validates the JSON object's keys against the row options' `value`s and its values against the
 column options' `value`s. A row labeled "Content" with internal value `"Option63937194"` and a
 column labeled "Office" with internal value `"Option77676455"` must be written as

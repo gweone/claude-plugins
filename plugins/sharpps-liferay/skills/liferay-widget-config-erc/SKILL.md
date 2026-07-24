@@ -36,7 +36,7 @@ equally easy to store; only one of them survives a re-import.
 ## Confirmed evidence this isn't theoretical
 
 Found while reviewing
-[page-definition.json](file:///opt/github/PISLIB/liferay/client-extensions/sharpps-site-initializer/site-initializer/layouts/search-documentation/document-list/page-definition.json),
+`page-definition.json` (`client-extensions/sharpps-site-initializer/site-initializer/layouts/search-documentation/document-list/page-definition.json`),
 which configures several `org_sharpps_search_*` portlets (`modules/search`,
 `org.sharpps.search.*`). Every value below is copied verbatim from the file, straight from the
 *source* instance at export time:
@@ -45,7 +45,7 @@ which configures several `org_sharpps_search_*` portlets (`modules/search`,
 |---|---|---|---|---|
 | `rootFolderId: "47866"` | `org_sharpps_search_filter_foldertree_FolderTreePortlet` | A specific `DLFolder` ("documents") | was used **raw**, as `.value(rootFolderId)` in an Elasticsearch term query and in a `treePath` wildcard match; same raw-id pattern in the breadcrumb's own URL token (`{type}::{subfolderId}`) | **Fixed** — see below |
 | `definitionId: "44180"`, nested `definitionId` values inside the `displayViews` JSON blob | `org_sharpps_search_facet_field_FieldFacetPortlet`, `org_sharpps_search_filter_field_FieldFilterPortlet`, `org_sharpps_search_results_display_DisplaySearchResultsPortlet` | A specific `DDMStructure` ("Shared Metadata") | was read as `long`, concatenated **into the indexed field name itself**: `"ddm__" + indexType + "__" + definitionId + "__" + fieldReference` | **Fixed** — see below |
-| `subTypeId: "44228"` | `org_sharpps_search_facet_field_FieldFacetPortlet` | A specific `DLFileEntryType` ("Metadata Form") | [`FieldFacetPortletPreferences.java:22`](file:///opt/github/PISLIB/liferay/modules/search/src/main/java/org/sharpps/search/facet/field/portlet/FieldFacetPortletPreferences.java#L22) — deliberately kept separate from `definitionId` per the comment there (different ID space: fileEntryTypeId vs. ddmStructureId) | **Not yet fixed** |
+| `subTypeId: "44228"` | `org_sharpps_search_facet_field_FieldFacetPortlet` | A specific `DLFileEntryType` ("Metadata Form") | `FieldFacetPortletPreferences.java:22` (`modules/search/src/main/java/org/sharpps/search/facet/field/portlet/FieldFacetPortletPreferences.java#L22`) — deliberately kept separate from `definitionId` per the comment there (different ID space: fileEntryTypeId vs. ddmStructureId) | **Not yet fixed** |
 | `displayStyleGroupId: "20126"` | Most widgets on the page (search bar, both facets, display-search-results, folder tree) | A specific Site/Group (Guest, on the source instance) | Standard Liferay ADT picker pattern | **Lower risk**, see below — don't fix the same way |
 
 ## `definitionId` → `definitionERC`: fixed, full recipe
@@ -58,8 +58,8 @@ of `PREFERENCE_KEY_DEFINITION_ID`; both field-picker JSPs
 `definitionERC` hidden input instead of `data-definition-id`/`definitionId`.
 
 A new `org.sharpps.search.definition.DefinitionResolver` OSGi service
-([`DefinitionResolver.java`](file:///opt/github/PISLIB/liferay/modules/search/src/main/java/org/sharpps/search/definition/DefinitionResolver.java),
-[`DefinitionResolverImpl.java`](file:///opt/github/PISLIB/liferay/modules/search/src/main/java/org/sharpps/search/definition/internal/DefinitionResolverImpl.java))
+(`DefinitionResolver.java` (`modules/search/src/main/java/org/sharpps/search/definition/DefinitionResolver.java`),
+`DefinitionResolverImpl.java` (`modules/search/src/main/java/org/sharpps/search/definition/internal/DefinitionResolverImpl.java`))
 resolves `(externalReferenceCode, groupId, className)` → the current `DDMStructure.structureId` via
 `DDMStructureLocalService.fetchStructureByExternalReferenceCode`, caching the result as an
 `HttpServletRequest` attribute keyed by `groupId#className#erc` so multiple widgets/fields on the
@@ -93,8 +93,8 @@ Unlike `definitionId` (a single entity type, `DDMStructure`), the FolderTree wid
 `DLFolder`, `JournalFolder`, `KBFolder` — each with its own ERC-lookup mechanism and even its own
 primary-key getter name (`KBFolder.getKbFolderId()`, not `getFolderId()`). A new
 `org.sharpps.search.definition.FolderResolver` OSGi service
-([`FolderResolver.java`](file:///opt/github/PISLIB/liferay/modules/search/src/main/java/org/sharpps/search/definition/FolderResolver.java),
-[`FolderResolverImpl.java`](file:///opt/github/PISLIB/liferay/modules/search/src/main/java/org/sharpps/search/definition/internal/FolderResolverImpl.java))
+(`FolderResolver.java` (`modules/search/src/main/java/org/sharpps/search/definition/FolderResolver.java`),
+`FolderResolverImpl.java` (`modules/search/src/main/java/org/sharpps/search/definition/internal/FolderResolverImpl.java`))
 dispatches by `folderEntryClassName` to the right lookup:
 
 | Folder type | ERC → id | id → ERC | Primary key getter |

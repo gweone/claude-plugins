@@ -17,6 +17,9 @@ description: >
 
 # Liferay Batch Client Extension Skill
 
+> Commands below reference `$LIFERAY_PORTAL`, the dynamically-resolved Liferay Portal source
+> checkout — see the `liferay-portal-source` skill to resolve/bootstrap it before running them.
+
 A Batch Client Extension imports data by calling existing Headless REST "collection" resources
 directly (Object Definitions/Entries, List Types, Workflow Definitions, Roles, Users) — declared
 as `*.batch-engine-data.json` files, no custom Java required. It is a **different mechanism**
@@ -402,11 +405,11 @@ boilerplate on nearly every REST resource) — check **real usage**, not just th
 
 ```bash
 # Every className actually used across every real-world batch CX sample:
-grep -rh '"className"' /opt/github/liferay-portal/workspaces/*/client-extensions/*-batch/batch/*.json | sort -u
+grep -rh '"className"' "$LIFERAY_PORTAL"/workspaces/*/client-extensions/*-batch/batch/*.json | sort -u
 
 # Confirm a specific resource's delegate exists at all (interface implemented ≠ tested/working):
-grep -rl "VulcanBatchEngineTaskItemDelegate" /opt/github/liferay-portal/modules/apps/<area>/
+grep -rl "VulcanBatchEngineTaskItemDelegate" "$LIFERAY_PORTAL/modules/apps/<area>/"
 
 # The actual site/scope-targeting logic, if you need to re-verify Section 4 against a newer build:
-grep -n "siteId\|scopeKey" /opt/github/liferay-portal/modules/apps/portal-vulcan/portal-vulcan-impl/src/main/java/com/liferay/portal/vulcan/internal/batch/engine/VulcanBatchEngineTaskItemDelegateAdaptor.java
+grep -n "siteId\|scopeKey" "$LIFERAY_PORTAL/modules/apps/portal-vulcan/portal-vulcan-impl/src/main/java/com/liferay/portal/vulcan/internal/batch/engine/VulcanBatchEngineTaskItemDelegateAdaptor.java"
 ```
