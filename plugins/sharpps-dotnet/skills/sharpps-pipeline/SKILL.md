@@ -20,12 +20,37 @@ migration scripts; `install`/`sif` install software) — not read-only inspectio
    brand-new one from a custom folder. Ask the user if the target pipeline or arguments are
    ambiguous rather than guessing — especially before touching one of the pipelines with real
    side effects listed above.
-2. **Plan** — state the exact cmdlet invocation that will run — pipeline name, the full
-   `$arguments` hashtable, any `-Predecessors`, and for `Update-Pipeline` which processor and
-   which action — before running it. If the pipeline performs a real action (deploy, install,
-   DB migration, archive), say so explicitly as part of the Plan so it isn't a surprise.
+2. **Plan** — state the exact cmdlet invocation that will run — which PowerShell host (see
+   below), pipeline name, the full `$arguments` hashtable, any `-Predecessors`, and for
+   `Update-Pipeline` which processor and which action — before running it. If the pipeline
+   performs a real action (deploy, install, DB migration, archive), say so explicitly as part of
+   the Plan so it isn't a surprise.
 3. **Execution** — run the cmdlet from the Plan and report the result (which processors ran,
    whether `Aborted`/`Help` short-circuited early, and any output the pipeline produced).
+
+## Which PowerShell host to invoke
+
+`SharpPS.Shells` is cross-platform (the `install` pipeline explicitly branches Chocolatey vs.
+native Linux/macOS package managers), so don't default to one launcher name without checking:
+
+- **Windows**: both `powershell` (Windows PowerShell 5.1 — built in, legacy) and `pwsh`
+  (PowerShell 7+/Core, if installed) may be present. Prefer `pwsh` unless the user explicitly
+  asks for Windows PowerShell — it's the actively-maintained line and the same one required on
+  Linux/macOS, so defaulting to it keeps behavior consistent across OSes.
+- **Linux/macOS**: only `pwsh` exists — there is no `powershell` binary at all. The module
+  targets `netstandard2.0` so it loads under either host, but only `pwsh` runs outside Windows in
+  the first place.
+
+When invoking a cmdlet from a non-PowerShell shell (e.g. this Bash tool, a CI step), call the
+host explicitly rather than assuming the ambient shell already is PowerShell:
+
+```bash
+pwsh -NoProfile -Command "Start-Pipeline sitecore @{ PublishUrl = 'C:\Custom\Path' } -Verbose"
+```
+
+If the user is specifically working inside a Windows PowerShell 5.1 session (not `pwsh`), swap
+`pwsh` for `powershell` in the invocation above — the cmdlets themselves behave the same either
+way, only the host binary name changes.
 
 `SharpPS.Shells` is a PowerShell module (`SharpPS.Shells.psd1`/`.psm1`, `netstandard2.0` compiled
 cmdlets + shipped `.ps1` scripts) built around one idea: a **pipeline** is a named, ordered list of

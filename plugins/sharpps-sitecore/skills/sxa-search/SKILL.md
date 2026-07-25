@@ -58,7 +58,16 @@ Invoke-WebRequest -Uri "$Url$query" -WebSession $webSession -UseBasicParsing
 - `sc_site` - plain public param (`Site` on `BaseModel`), works for anyone,
   no authentication needed. Drives home-item/predicate scoping (see
   `PageOrMediaPredicate` below) - **not** the same thing as choosing a
-  database.
+  database, and **not** what determines which site handles the request in
+  the first place: standard Sitecore site resolution (host name + virtual
+  folder) already ran before the search controller does, exactly like any
+  other request. `sc_site` only matters when you need to scope the search to
+  a *different* site's home/associated content than the one that request
+  already resolved to. Live-verified on `sitecorex41.dev.wsc`: with the
+  `Demo` site bound to hostname `*` / virtual folder `/` (the only site
+  matching that host), `/sxa/search/results` returned byte-identical results
+  with and without `sc_site=Demo` - omitting it is safe whenever the request
+  already lands on the right site through its own URL.
 - `sc_database` - **not** part of the SXA search request models at all; it's
   core Sitecore's own `sc_database` query string switch
   (`Sitecore.Pipelines.HttpRequest.DatabaseResolver`, part of the standard
