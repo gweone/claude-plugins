@@ -174,6 +174,41 @@ Value format depends on the Facet's type (checked via `DoesItemInheritFrom`):
 - `DistanceFacet`: a distance string (e.g. `10km`) evaluated against the `g`
   coordinate as the query's center
 
+### Search Scope: the item behind the `s` param
+
+`s` (`ScopesIDs`) takes one or more Sitecore item IDs, `,`/`|`-separated;
+each referenced item's `ScopeQuery` field contributes a query clause (OR'd
+together across multiple scopes) that narrows what the search actually runs
+against - independent of, and in addition to, whatever `itemid`/`sc_site`
+already resolve as the index/home-item scope.
+
+Live-verified against `sitecorex41.dev.wsc` (site `SitecoreX/Demo`) by
+inspecting its own built-in default scope:
+
+| Fact | Value |
+|---|---|
+| Template name | `Scope` |
+| Template ID | `{8B649372-CC12-4F31-802A-8C3B3D09BB3F}` |
+| Location | `{sxa-site}/Settings/Scopes/{scope name}`, e.g. `/sitecore/content/SitecoreX/Demo/Settings/Scopes/Site` |
+| Field | `ScopeQuery` - a Sitecore fast-query expression, e.g. the built-in "Site" scope's value was `fast:/sitecore/content/SitecoreX/Demo//*` |
+
+Every SXA site is provisioned with at least one scope (typically named
+`Site`, scoping to everything under that site) under `Settings/Scopes` by
+default - so unlike Rendering Variants, this folder doesn't usually need to
+be created from scratch, only new sibling Scope items added to it.
+
+`Scope` items also carry a Boosting rule set (evaluated by
+`IBoostingService.BoostQuery`) - see `SharpPS.Sitecore.ContentSearch.XA`'s
+own docs if extending that rule editor is relevant, out of scope here.
+
+Don't assume a new component needs its own scope with a narrowed
+`ScopeQuery` - many components are fine reusing the site's existing default
+scope (or no `s` param at all). Only create a new Scope item when the
+component genuinely needs to search a different subtree/root than the
+site default, and leave `ScopeQuery` empty for the author to fill in
+deliberately (e.g. in Content Editor) rather than guessing a fast-query
+expression for them.
+
 ## Response shapes
 
 All three carry `TotalTime`, `QueryTime`, `Signature`, `Index`, plus their own results array.
@@ -241,6 +276,9 @@ same way as any other SXA rendering variant), not something search-specific.
   fields/why), and check whether that rendering (and its backing
   Feature-layer template/rendering item, per the `sitecore` skill's CMS
   workflow) already exists or needs to be created first
+- Whether this needs its own Search Scope (a new `s` value) or can reuse the
+  site's existing default scope - don't assume a new scope is needed, see
+  "Search Scope" above
 
 **Plan - resolve in dependency order:**
 1. If using a Component Variant Field and the rendering doesn't exist yet:
@@ -255,14 +293,18 @@ same way as any other SXA rendering variant), not something search-specific.
 4. Child field node(s) under the variant item - a `VariantComponentField`
    (`{1151B2A9-08AF-4F4D-A892-C2CC9A92EA6A}`) with `RenderingItem` set to the
    rendering from step 1, or plain `VariantText`/`VariantField`/etc. nodes
+5. Only if a new scope was decided in Spec: a `Scope` item under
+   `{sxa-site}/Settings/Scopes/{scope name}` with its `ScopeQuery` field -
+   see "Search Scope" above
 
 **Execution:**
 1. Create the `.cshtml` file and register it in the `.csproj` (see below)
-2. Create the variant item and its field node(s) via `New-SPESession` +
-   `Invoke-RemoteScript` (same mechanism as the `sitecore` skill's CMS
-   example - don't just describe the Content Editor steps)
-3. Report back the variant item's ID - that's the `v` value to pass to
-   `/sxa/search/results`
+2. Create the variant item and its field node(s), and the scope item if
+   needed, via `New-SPESession` + `Invoke-RemoteScript` (same mechanism as
+   the `sitecore` skill's CMS example - don't just describe the Content
+   Editor steps)
+3. Report back the variant item's ID (the `v` value) and, if created, the
+   scope item's ID (the `s` value) to pass to `/sxa/search/results`
 
 ### Where these variant items live in the content tree
 
@@ -271,6 +313,18 @@ same way as any other SXA rendering variant), not something search-specific.
 Results/{variant name}`. Author/edit the variant's field nodes there in the
 Rendering Variants editor; its item ID is what gets passed as `v` (or listed
 in a Results Variant Selector's `AvailableVariants`).
+
+Live-verified template IDs (from an existing "Search Results" variant group
+on `sitecorex41.dev.wsc`):
+
+| Item | Template name | Template ID |
+|---|---|---|
+| The group folder itself (e.g. "Search Results") | `Variants` | `{E1A3B30C-77BC-4F6C-A008-D01B3371235D}` |
+| An individual variant (e.g. "horizontal") | `Variant Definition` | `{FB3E3034-33F8-4CE8-BE98-DD05010F4C22}` |
+
+Like Scopes, the group folder is normally pre-provisioned by SXA (this
+instance already had "Search Results", "Promo", "POI", etc. groups) - usually
+only the individual `Variant Definition` item needs creating.
 
 ### Component Variant Field: reusing a Rendering for each result
 

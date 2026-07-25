@@ -218,14 +218,14 @@ creating items** - don't guess a name or assume there's only one.
 
 Run everything against the remote session via SPE Remoting's
 `Invoke-RemoteScript` - the script block executes on the Sitecore instance,
-not locally. `$SiteFolder`/`$SxaSite` are the Tenant/Site the user gave you -
+not locally. `$SxaSiteCollection`/`$SxaSite` are the Tenant/Site the user gave you -
 pass them in explicitly, don't leave them to resolve from an outer scope:
 
 ```powershell
 $speSession = New-SPESession -Url $Url -Username $Username -Password $Password
 
 Invoke-RemoteScript -Session $speSession -ScriptBlock {
-    param($core, $area, $featureName, $renderingName, $siteFolder, $sxaSite)
+    param($core, $area, $featureName, $renderingName, $sxaSiteCollection, $sxaSite)
 
     $templateFolder = "master:/sitecore/templates/Feature/$core/$area/$featureName"
     $template = New-Item -Path $templateFolder -Name $renderingName -ItemType "/sitecore/templates/System/Templates/Template"
@@ -235,9 +235,9 @@ Invoke-RemoteScript -Session $speSession -ScriptBlock {
     $renderingFolder = "master:/sitecore/layout/Renderings/Feature/$core/$area/$featureName"
     New-Item -Path $renderingFolder -Name $renderingName -ItemType "/sitecore/templates/System/Layout/Renderings/View Rendering"
 
-    $dataFolder = "master:/sitecore/content/$siteFolder/$sxaSite/Data/$core/$area/$featureName/$renderingName"
+    $dataFolder = "master:/sitecore/content/$sxaSiteCollection/$sxaSite/Data/$core/$area/$featureName/$renderingName"
     New-Item -Path $dataFolder -Name "Sample $renderingName" -ItemType $template.ID
-} -ArgumentList $Core, $Area, $FeatureName, $RenderingName, $SiteFolder, $SxaSite
+} -ArgumentList $Core, $Area, $FeatureName, $RenderingName, $SxaSiteCollection, $SxaSite
 ```
 
 Set the new rendering item's `Datasource Template`/`Datasource Location`
