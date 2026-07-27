@@ -3,12 +3,13 @@
   "name": "sharpps-plugins",
   "description": "Plugin marketplace for SharpPS framework tooling and knowledge",
   "owner": {
-    "name": "gweone",
-    "email": "julkahendrist@gmail.com"
+    "name": "SharpPS",
+    "email": "contact@sharpps.dpdns.org"
   },
   "plugins": [
     {
       "name": "sharpps-sitecore",
+      "displayName": "SharpPS for Sitecore",
       "description": "Sitecore/SXA knowledge for solutions built on the SharpPS framework: instance interaction via SharpPS.Shells (PowerShell/SPE), SXA native search (/sxa/search/*), creating Feature/Foundation projects, and building Controller Renderings with a custom .cshtml view path.",
       "author": {
         "name": "SharpPS"
@@ -19,6 +20,7 @@
     },
     {
       "name": "sharpps-liferay",
+      "displayName": "SharpPS for Liferay",
       "description": "Liferay knowledge and workflow tooling for solutions built on the SharpPS framework: Gradle build/deploy, Docker log management, Batch Client Extensions, DDM field validation, Site Initializers, JSP/FTL taglibs, React module scaffolding, management toolbar bulk actions, portlet widget configuration, and navigating the Liferay Portal source.",
       "author": {
         "name": "SharpPS"
@@ -29,6 +31,7 @@
     },
     {
       "name": "sharpps-dotnet",
+      "displayName": "SharpPS for .NET",
       "description": ".NET tooling knowledge for solutions built on the SharpPS framework: decompiling .NET Framework and .NET Core/5+ DLLs/EXEs back to C# source via the cross-platform ilspycmd CLI, and the SharpPS.Shells PowerShell pipeline system (running, runtime-patching, and authoring workspace pipelines).",
       "author": {
         "name": "SharpPS"

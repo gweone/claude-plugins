@@ -1,5 +1,6 @@
 {
   "name": "sharpps-sitecore",
+  "displayName": "SharpPS for Sitecore",
   "description": "Sitecore/SXA knowledge for solutions built on the SharpPS framework: instance interaction via SharpPS.Shells (PowerShell/SPE), SXA native search (/sxa/search/*), creating Feature/Foundation projects, and building Controller Renderings with a custom .cshtml view path.",
   "author": {
     "name": "SharpPS"
