@@ -1,0 +1,8 @@
+{
+  "name": "sharpps-work",
+  "displayName": "SharpPS for Work",
+  "description": "General office/documentation tooling for solutions built on the SharpPS framework: capturing real screenshots of authenticated web apps via a headless browser (including local multi-tenant/reverse-proxied instances where the real domain doesn't resolve to the dev environment), and generating genuine OpenXML Word (.docx) documents with embedded screenshots, headings, and tables via python-docx.",
+  "author": {
+    "name": "SharpPS"
+  }
+}

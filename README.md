@@ -15,6 +15,7 @@ Add this marketplace, then install a plugin from it:
 /plugin install sharpps-sitecore@sharpps-plugins
 /plugin install sharpps-liferay@sharpps-plugins
 /plugin install sharpps-dotnet@sharpps-plugins
+/plugin install sharpps-work@sharpps-plugins
 ```
 
 or browse for the plugin in `/plugin > Discover`.
@@ -26,6 +27,7 @@ or browse for the plugin in `/plugin > Discover`.
 | [`sharpps-sitecore`](plugins/sharpps-sitecore) | Sitecore/SXA knowledge for solutions built on the SharpPS framework |
 | [`sharpps-liferay`](plugins/sharpps-liferay) | Liferay knowledge and workflow tooling for solutions built on the SharpPS framework |
 | [`sharpps-dotnet`](plugins/sharpps-dotnet) | .NET tooling knowledge for solutions built on the SharpPS framework |
+| [`sharpps-work`](plugins/sharpps-work) | General office/documentation tooling (screen capture, Word document generation) — not tied to any one platform |
 
 ## Plugin structure
 

@@ -1,0 +1,34 @@
+# sharpps-work
+
+General office/documentation tooling for solutions built on the [SharpPS](https://github.com/gweone) framework — not tied to any one platform, unlike this marketplace's other plugins.
+
+## Skills
+
+| Skill | Covers |
+|---|---|
+| `screen-capture` | Real screenshots of a running web app via a headless Chromium (Playwright), for documentation that shows the actual UI rather than mockups. Covers environment setup on non-apt Linux hosts, reaching a local multi-tenant/reverse-proxied instance whose real domain doesn't resolve to the dev environment (`--host-resolver-rules`, not Host-header route interception — documented as unreliable), login automation with session reuse via `storageState`, selector-robustness pitfalls that cause silently-wrong captures (ambiguous text selectors, `.last()` in a changing grid), and iterative screenshot-driven debugging. |
+| `generate-word` | Genuine OpenXML Word (`.docx`) documents via `python-docx` — headless, no Office/LibreOffice install needed. Covers title pages, styled headings, tables with a bold header row, embedding images with captions, note/callout paragraphs (no native element — built from a bold colored label), and verifying the output isn't corrupted before handing it over. |
+
+## Action skill workflow: Spec → Plan → Execution
+
+Both skills in this plugin run real commands (launch a browser, write a file) — never skip
+straight to running one. **Spec** (resolve the concrete target — which screens, which document
+structure — asking the user if ambiguous), **Plan** (state the exact steps about to run), then
+**Execution/Build** (run them and verify the result, not just trust a zero exit code). See each
+skill's own `SKILL.md` for how it applies this to that skill's specific commands.
+
+## Pairing the two skills
+
+The most common use of this plugin is together: `screen-capture` produces real screenshots of a
+live app, `generate-word` assembles them into a guideline document with headings, captions, and
+explanatory text around each one. Capture first, then build the document from the resulting
+image files — don't interleave them, since a document build that fails partway through is much
+cheaper to re-run than a capture session (which may depend on live, possibly-changing app state).
+
+## Source
+
+This plugin was built from real work producing a live-screenshot guideline document for a
+Frappe/ERPNext-based project's branch-restriction feature — a headless-Chromium capture session
+(including working around a local multi-tenant instance's Host-header routing) feeding into a
+generated `.docx` with embedded figures. The techniques here are the app-agnostic parts of that
+workflow, packaged for reuse in any project needing the same kind of documentation.
