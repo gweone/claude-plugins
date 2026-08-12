@@ -14,12 +14,24 @@ so the output states its own confidence rather than presenting guesses as fact.
 **Cross-platform**: the CLI and tree-sitter parsing behave identically on Windows, macOS, and Linux.
 Only the install command's fallback (pip vs. pipx) is platform-specific, noted below.
 
+## When this is actually worth reaching for
+
+A single-module question ("what does X depend on?", "what does this function call?") is usually
+answered just as well, and more cheaply, by reading the file/manifest directly — no install, no
+build-the-graph wait. Don't assume every dependency/relationship question means invoking this
+skill; a generic ask without the tool named will often (correctly) fall back to plain code
+reading instead, since that's the lighter-weight path. Reach for graphify specifically when the
+question spans many files/modules at once (tracing a call chain across dozens of submodules,
+finding every consumer of a symbol repo-wide) or needs a repeatable export (wiki, Neo4j, SVG) —
+and if you want it invoked for a simpler question anyway, name the tool explicitly rather than
+relying on the question alone to trigger it.
+
 ## Workflow: Spec → Plan → Init
 
-1. **Spec** — confirm the target root(s) before running anything. For a polyglot repo (C#
-   backend + Java service + TypeScript/npm frontend), decide whether to graph each project
-   separately or point graphify at a shared monorepo root — see **Cross-language limitation**
-   below before assuming one graph will link them.
+1. **Spec** — confirm the target root(s) before running anything. For a polyglot repo (e.g. a
+   JS/TS frontend alongside a backend in a different language), decide whether to graph each
+   project separately or point graphify at a shared monorepo root — see **Cross-language
+   limitation** below before assuming one graph will link them.
 2. **Plan** — state the exact command about to run (`/graphify .` vs. a specific subfolder,
    `--mode deep` vs. default, whether `--watch` should stay running afterward) before executing.
 3. **Init** — install, run the first pass, then verify the output (see Verification) before
@@ -94,6 +106,15 @@ graphify hook install            # post-commit git hook, keeps the graph current
 
 For an existing graph, always prefer `--update` over re-running a full pass — it only
 re-extracts changed files instead of rebuilding everything.
+
+**Confirmed gotcha**: `GRAPH_REPORT.md`'s "Built from commit" freshness line reads
+`git rev-parse HEAD` from the *process's current working directory*, not from the folder being
+graphed. If graphify is invoked while the shell's cwd is a different repo than the target path
+(e.g. running it from a plugin/tooling repo but pointing it at a project checked out elsewhere),
+that line silently reports the wrong repo's commit — the graph content itself is unaffected, only
+that one staleness stamp is misleading. Don't trust it to answer "is this graph stale" in that
+setup; `cd` into the target repo before running graphify, or just re-run `--update` on a schedule
+instead of relying on the commit-hash comparison.
 
 ## Verification
 
