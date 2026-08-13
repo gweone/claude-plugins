@@ -8,11 +8,12 @@ General office/documentation tooling for solutions built on the [SharpPS](https:
 |---|---|
 | `screen-capture` | Real screenshots of a running web app via a headless Chromium (Playwright), for documentation that shows the actual UI rather than mockups. Covers environment setup on non-apt Linux hosts, reaching a local multi-tenant/reverse-proxied instance whose real domain doesn't resolve to the dev environment (`--host-resolver-rules`, not Host-header route interception — documented as unreliable), login automation with session reuse via `storageState`, selector-robustness pitfalls that cause silently-wrong captures (ambiguous text selectors, `.last()` in a changing grid), and iterative screenshot-driven debugging. |
 | `generate-word` | Genuine OpenXML Word (`.docx`) documents via `python-docx` — headless, no Office/LibreOffice install needed. Covers title pages, styled headings, tables with a bold header row, embedding images with captions, note/callout paragraphs (no native element — built from a bold colored label), and verifying the output isn't corrupted before handing it over. |
-| `graphify` | Turn a codebase in any language into a queryable knowledge graph via [graphify](https://github.com/Graphify-Labs/graphify)'s deterministic tree-sitter AST parsing — no vector store, nothing leaves the machine. Covers install (`pip install graphifyy && graphify install`), the first `/graphify .` pass, tree-sitter language coverage, the cross-language call-graph limitation in polyglot/microservice repos, `--update`/`--watch`/export flags, and verifying node/edge counts before handing off the graph. |
+| `codebase-memory-mcp` | Turn a codebase in any language into a queryable knowledge graph via [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp), an MCP server (not a slash command) — tree-sitter AST + a lightweight semantic type-resolution layer, plus cross-service HTTP/gRPC/GraphQL route matching that plain AST-only tools can't do. Covers the two-step install (binary fetch + separate `codebase-memory-mcp install` agent-registration step, which changes tool-call behavior across every detected client on the machine), the 15 MCP tools, CLI equivalents, language coverage tiers, and verifying confidence-scored cross-service claims before trusting them. |
 
 ## Action skill workflow: Spec → Plan → Execution
 
-Both skills in this plugin run real commands (launch a browser, write a file) — never skip
+The skills in this plugin run real commands (launch a browser, write a file, register an MCP
+server) — never skip
 straight to running one. **Spec** (resolve the concrete target — which screens, which document
 structure — asking the user if ambiguous), **Plan** (state the exact steps about to run), then
 **Execution/Build** (run them and verify the result, not just trust a zero exit code). See each
