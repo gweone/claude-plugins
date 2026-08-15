@@ -1,6 +1,6 @@
 ---
 name: structured-documentation
-description: Use when the user wants a written doc on a specific workspace feature captured for later — what was found while investigating it, or what was built/decided on it — as a short "Findings / Feedback / Conclusion" markdown doc saved to docs/structured-documentation/. Triggers on phrases like "document what you found", "write up the findings", "document this feature", or after investigating, building, or reviewing a feature when the user wants it captured, not just stated in chat. Always check docs/structured-documentation/README.md first if it exists — every run of this skill, even in a brand-new session — to avoid duplicating an existing doc and to pick up the folder's established conventions without the user re-explaining them. Covers keeping the three sections doing distinct jobs (facts vs. judgment vs. decision), tracking unresolved items via a Status field and an Outstanding checklist, correlating multiple docs through that shared README.md, handling confidential content (never writing secrets/credentials/PII into a file that's permanently committed to git history — redact and flag Confidentiality instead), and running a humanizing pass (via the humanizer skill) so the doc doesn't read like AI-generated prose before it's saved.
+description: Use when the user wants a written doc on a specific workspace feature captured for later — what was found while investigating it, what was built/decided on it, OR an existing piece of documentation (a README, a research log, old notes) converted/restructured into this format. Triggers on phrases like "document what you found", "write up the findings", "document this feature", "convert this doc/file to structured-documentation", "restructure this into the structured format", or after investigating, building, or reviewing a feature when the user wants it captured, not just stated in chat. When the source is an existing file, actually read it and rewrite its content into the template — a reference/link to the original file is not a substitute for conversion. A large existing document covering many topics becomes multiple docs, one per topic, not one oversized doc (see Converting an existing document). Always check docs/structured-documentation/README.md first if it exists — every run of this skill, even in a brand-new session — to avoid duplicating an existing doc and to pick up the folder's established conventions without the user re-explaining them. Covers keeping the three sections doing distinct jobs (facts vs. judgment vs. decision), tracking unresolved items via a Status field and an Outstanding checklist, correlating multiple docs through that shared README.md, handling confidential content (never writing secrets/credentials/PII into a file that's permanently committed to git history — redact and flag Confidentiality instead), and running a humanizing pass (via the humanizer skill) so the doc doesn't read like AI-generated prose before it's saved.
 ---
 
 # Structured documentation: Findings / Feedback / Conclusion
@@ -25,10 +25,16 @@ relocate as a unit, and impossible to confuse with a project's other documentati
    shows the conventions in use (naming, Status values) without the user having to repeat them.
    This applies every time this skill runs, not just on a brand-new workspace — a fresh session
    has no memory of docs written earlier, the README is how it recovers that context.
-2. **Gather** — use whatever already happened in the conversation (an investigation via the
-   Explore agent or `codebase-memory-mcp`, grep, manual reading, or work the user just built) as
-   the source of the doc. Don't re-run something that already produced an answer earlier in the
-   session.
+2. **Gather** — the source is either of two things:
+   - **This conversation** — an investigation via the Explore agent or `codebase-memory-mcp`,
+     grep, manual reading, or work the user just built. Don't re-run something that already
+     produced an answer earlier in the session.
+   - **An existing document the user points at** — a README, a research log, old notes, anything
+     already written. Read the file in full (or the relevant part of it, for a large file — see
+     Converting an existing document below) before drafting. The point of this skill is to
+     restructure real content into the template, not to summarize the file's existence or link to
+     it; if the draft doesn't contain the actual substance from the source file, the conversion
+     didn't happen.
 3. **Draft** the three sections, in order, and keep each one doing a different job — the most
    common failure is letting them blur together:
    - **Findings** — what's actually there: file paths, behavior, root cause, or what was built.
@@ -102,6 +108,26 @@ One or two sentences — the takeaway, for a reader who won't read past this lin
 (omit this section entirely once nothing is left open — don't leave an empty checklist sitting
 in a "Resolved" doc)
 ```
+
+## Converting an existing document
+
+When the source is a file the user already has, not a fresh investigation, two cases:
+
+- **The file covers one feature/topic.** Read it fully, then draft normally: pull its actual
+  claims into numbered Findings, its judgment calls into Feedback, its decision into Conclusion.
+  Drop anything that was pure narration of the writing process itself (changelogs of the doc, not
+  of the feature) — the template captures the feature, not the history of the file about it.
+- **The file covers many topics/entries** (a running log, a multi-section wiki page, a journal).
+  Do not force it into one doc — that either balloons every field past "a sentence or two" or
+  guts most of the content to fit. Instead, treat each distinct topic/entry as its own feature:
+  one `structured-documentation` doc per entry, each following the normal template, all listed in
+  the shared README.md. A single source file can produce many output docs; that's expected, not
+  a sign something went wrong. If it's unclear where one entry ends and the next begins, ask the
+  user rather than guessing a split.
+- Either way, converting is not linking. Producing a doc whose Findings section just says "see
+  `original-file.md` for details" isn't a conversion — it's a pointer, and it defeats the reason
+  the user asked for this in the first place (a scannable structure instead of a large file to
+  read from scratch).
 
 ## Status and Outstanding items
 
