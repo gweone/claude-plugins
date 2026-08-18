@@ -24,6 +24,35 @@ request across a polyglot/microservice boundary, which is exactly where AST-only
 and Windows (amd64) — no Node/Python runtime needed to run it (only a C/C++ compiler + zlib
 headers + git at build/verify time per the install script's requirements check).
 
+## Sandboxed / remote-shell connections (e.g. SharpPS)
+
+When this repo is reached over a remote shell/sandbox connector (e.g. SharpPS `shell_execute`)
+rather than Claude Code running natively on the host, the MCP install/registration workflow below
+doesn't apply: there's no local Claude Code client session on that host to restart, and nothing
+there will pick up an MCP entry written to `~/.claude.json`. In that situation, skip straight to
+**CLI mode** and use it for every operation instead of MCP tools:
+
+```bash
+codebase-memory-mcp cli index_repository --repo-path <root_path>
+codebase-memory-mcp cli list_projects
+codebase-memory-mcp cli search_graph --project <project> --name-pattern '...' --label Function
+codebase-memory-mcp cli trace_path --project <project> --function-name <name> --direction both
+codebase-memory-mcp cli query_graph --project <project> --query '...'
+codebase-memory-mcp cli index_status --project <project> --verbose true
+```
+
+If the binary isn't present on the host yet, still run the install script to fetch it (it also
+configures any clients that happen to exist on that box — harmless if unused):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash
+```
+
+but treat that as a binary install only — don't wait for or reference an MCP tool restart, and
+don't call MCP tool names (`index_repository`, `search_graph`, etc.) directly; those only exist
+inside an MCP client. Every read/query in this connection type goes through `cli`, using whatever
+shell tool the connector provides (e.g. `shell_execute`).
+
 ## Workflow: Spec → Plan → Init
 
 1. **Spec** — confirm the target repo path and, for a polyglot/microservice setup, whether the
